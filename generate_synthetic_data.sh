@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-sed -i 's/exporter.csv.export = false/exporter.csv.export = true/' synthea.properties
-
 ./run_synthea -c synthea.properties -p 10 -s 0 -cs 0 -r 20220511
 
 find ./output -name "*.csv" -size +50000000c -print | while read file; do
