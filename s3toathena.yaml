@@ -1,0 +1,115 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >
+  This template sets up Glue resources and Athena tables to run queries over data uploaded to S3.
+
+Parameters:
+  CrawlerName:
+    Type: String
+    Default: "gnct-upload-crawler"
+    Description: "Name of Glue crawler to crawl over uploaded data"
+
+  gnctUploadS3Bucket:
+    Type: String
+    Default: "bucket-name"
+    Description: "S3 bucket where data has been uploaded"
+
+  DBName:
+    Type: String
+    Default: "gnctdb"
+    Description: "Database name"
+
+  gnctGlueRoleName:
+    Type: String
+    Default: "gnct-glue-role"
+    Description: "Glue Role"
+
+  CrawlerTriggerName:
+    Type: String
+    Default: "gnct-trigger"
+    Description: "Crawler Trigger"
+
+  gnctGlueWorkflowName:
+    Type: String
+    Default: "gnct-post-upload"
+    Description: "gnctGlueWorkflow name"
+
+Resources:
+  gnctDatabase:
+    Type: AWS::Glue::Database
+    Properties:
+      CatalogId: !Ref AWS::AccountId
+      DatabaseInput:
+        Name: !Ref DBName
+        Description: "AWS Glue container to hold metadata tables for the GNC uploaded data crawler"
+  gnctUploadCrawler:
+    Type: AWS::Glue::Crawler
+    Properties:
+      Name: !Ref CrawlerName
+      Role: !GetAtt gnctGlueRole.Arn
+      Description: AWS Glue crawler to crawl GNC test data
+      DatabaseName: !Ref DBName
+      Targets:
+        S3Targets:
+          - Path: !Sub "s3://${gnctUploadS3Bucket}"
+      SchemaChangePolicy:
+        UpdateBehavior: "UPDATE_IN_DATABASE"
+        DeleteBehavior: "LOG"
+      Configuration: '{"Version":1.0,"CrawlerOutput":{"Partitions":{"AddOrUpdateBehavior":"InheritFromTable"},"Tables":{"AddOrUpdateBehavior":"MergeNewColumns"}}}'
+  
+  gnctGlueRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Ref gnctGlueRoleName
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "glue.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSGlueServiceRole
+      Policies:
+        - PolicyName: "gnct-glue-policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "cloudwatch:PutMetricData"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                  - "logs:CreateLogGroup"
+                  - "logs:DescribeLogStreams"
+                Resource: "*"
+              - Effect: "Allow"
+                Action:
+                  - "s3:GetObject"
+                  - "s3:PutObject"
+                  - "s3:ListBucket"
+                Resource:
+                  - !Sub "arn:aws:s3:::${gnctUploadS3Bucket}"
+                  - !Sub "arn:aws:s3:::${gnctUploadS3Bucket}/*"
+              - Effect: "Allow"
+                Action:
+                  - "kms:Decrypt"
+                Resource:
+                  - !Sub "arn:aws:kms:*:${AWS::AccountId}:key/*"
+
+  gnctGlueWorkflow:
+    Type: AWS::Glue::Workflow
+    Properties:
+      Name: !Ref gnctGlueWorkflowName
+      Description: Workflow for orchestrating crawling uploaded data.
+  CrawlerTrigger:
+    Type: AWS::Glue::Trigger
+    Properties:
+      WorkflowName: !Ref gnctGlueWorkflow
+      Name: !Ref CrawlerTriggerName
+      Description: Start crawler for uploaded gnc test data
+      Type: ON_DEMAND
+      Actions:
+        - CrawlerName: !Ref gnctUploadCrawler
