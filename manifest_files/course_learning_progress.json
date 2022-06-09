@@ -1,0 +1,13 @@
+{
+    "fileLocations": [
+        
+        {
+            "URIPrefixes": [
+                "s3://datalake-halpilot-prod/processed/reports/course_learning_progress/"
+            ]
+        }
+    ],
+    "globalUploadSettings": {   
+        "format": "JSON"
+    }
+}
