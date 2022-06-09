@@ -1,0 +1,13 @@
+{
+    "fileLocations": [
+        
+        {
+            "URIPrefixes": [
+                "s3://datalake-halpilot-prod/processed/reports/indicator_monitoring_compliance/"
+            ]
+        }
+    ],
+    "globalUploadSettings": {   
+        "format": "JSON"
+    }
+}
