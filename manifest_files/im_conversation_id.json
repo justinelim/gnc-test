@@ -1,0 +1,13 @@
+{
+    "fileLocations": [
+        
+        {
+            "URIPrefixes": [
+                "s3://datalake-halpilot-prod/processed/reports/im_conversation_id/"
+            ]
+        }
+    ],
+    "globalUploadSettings": {   
+        "format": "JSON"
+    }
+}
