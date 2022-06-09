@@ -1,0 +1,13 @@
+{
+    "fileLocations": [
+        
+        {
+            "URIPrefixes": [
+                "s3://datalake-halpilot-prod/processed/reports/diet_plan_details/"
+            ]
+        }
+    ],
+    "globalUploadSettings": {   
+        "format": "JSON"
+    }
+}
