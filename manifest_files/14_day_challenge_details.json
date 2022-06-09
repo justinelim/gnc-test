@@ -1,0 +1,13 @@
+{
+    "fileLocations": [
+        
+        {
+            "URIPrefixes": [
+                "s3://datalake-halpilot-prod/processed/reports/14_day_challenge_details/"
+            ]
+        }
+    ],
+    "globalUploadSettings": {   
+        "format": "JSON"
+    }
+}
