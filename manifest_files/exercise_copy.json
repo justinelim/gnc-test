@@ -3,7 +3,7 @@
         
         {
             "URIPrefixes": [
-                "s3://datalake-halpilot-test/processed/exercise_policy_daily_record/"
+                "s3://datalake-halpilot-test/processed/exercise_policy_daily_record/hal_partition_dt=2022-06-05/"
             ]
         }
     ],
