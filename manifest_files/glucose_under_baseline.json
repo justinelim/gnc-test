@@ -1,0 +1,13 @@
+{
+    "fileLocations": [
+        
+        {
+            "URIPrefixes": [
+                "s3://datalake-halpilot-prod/processed/reports/glucose_under_baseline/"
+            ]
+        }
+    ],
+    "globalUploadSettings": {
+        "format": "JSON"
+    }
+}
