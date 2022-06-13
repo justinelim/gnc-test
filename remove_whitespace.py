@@ -18,4 +18,3 @@ for filename in all_files:
         df[colx] = df[colx].apply(str) + "	"
 
     df.to_csv(filename, index=False, encoding='utf_8_sig')
-
